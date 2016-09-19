@@ -16,14 +16,28 @@ var ConfirmBattleContainer = React.createClass({
   // ocorre quando o componente acabou de ser montado. Logo. do PromptContainer eu recebo as informações do handleSubmitUser.
   componentDidMount: function(){
     var query = this.props.location.query;
-    //console.log('QUERY', query);
-    // Fetch info from Github then update state.
     githubhelpers.getPlayersInfo([query.playerOne, query.playerTwo])
+    .then(function(players){
+      //console.log('PLAYERS', players);
+      this.setState({
+        isLoading: false,
+          playersInfo: [players[0], players[1]]
+      })
+    }.bind(this))
+  },
+  handleInitiateBattle: function(){
+    this.context.router.push({
+      pathname: '/result',
+      state: {
+        playersInfo: this.state.playersInfo
+      }
+    })
   },
   render: function(){
     return(
       <ConfirmBattle
         isLoading={this.state.isLoading}
+        onInitiateBattle={this.handleInitiateBattle}
         playersInfo={this.state.playersInfo} />
     );
   }
